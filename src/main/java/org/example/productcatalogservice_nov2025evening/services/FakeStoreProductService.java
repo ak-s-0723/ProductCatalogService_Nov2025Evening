@@ -3,11 +3,11 @@ package org.example.productcatalogservice_nov2025evening.services;
 import org.example.productcatalogservice_nov2025evening.dtos.FakeStoreProductDto;
 import org.example.productcatalogservice_nov2025evening.models.Category;
 import org.example.productcatalogservice_nov2025evening.models.Product;
-import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RequestCallback;
 import org.springframework.web.client.ResponseExtractor;
@@ -51,7 +51,7 @@ public class FakeStoreProductService implements IProductService {
     }
 
     private <T> ResponseEntity<T> requestForEntity(String url, @Nullable Object request, HttpMethod httpMethod,
-                                               Class<T> responseType, Object... uriVariables) throws RestClientException {
+                                                   Class<T> responseType, Object... uriVariables) throws RestClientException {
         RequestCallback requestCallback = restTemplate.httpEntityCallback(request, responseType);
         ResponseExtractor<ResponseEntity<T>> responseExtractor = restTemplate.responseEntityExtractor(responseType);
         return restTemplate.execute(url, httpMethod, requestCallback, responseExtractor, uriVariables);
