@@ -20,7 +20,7 @@ import java.util.List;
 public class ProductController {
 
     @Autowired
-    @Qualifier("sps")
+    //@Qualifier("sps")
     private IProductService productService;
 
 
@@ -52,8 +52,10 @@ public class ProductController {
 //        }
 //    }
     public ResponseEntity<ProductDto> getProductById(@PathVariable Long id) {
-        if (id <= 0) {
-                throw new IllegalArgumentException("Please pass id > 0");
+        if (id == 0) {
+                 throw new IllegalArgumentException("Please pass id > 0");
+        } else if(id < 0) {
+                throw new IllegalArgumentException("Invalid Id");
         }
 
         Product product = productService.getProductById(id);
