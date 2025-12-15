@@ -69,6 +69,7 @@ public class ProductController {
 
     @PostMapping
     public ProductDto createProduct(@RequestBody ProductDto productDto) {
+        //return productDto;
         Product product = from(productDto);
         Product response = productService.createProduct(product);
         return from(response);
@@ -92,11 +93,11 @@ public class ProductController {
 
     private ProductDto from (Product product) {
         ProductDto productDto = new ProductDto();
-        productDto.setId(product.getId());
         productDto.setName(product.getName());
         productDto.setDescription(product.getDescription());
         productDto.setPrice(product.getPrice());
         productDto.setImageUrl(product.getImageUrl());
+        productDto.setId(product.getId());
         if(product.getCategory() != null) {
             CategoryDto categoryDto = new CategoryDto();
             categoryDto.setName(product.getCategory().getName());
