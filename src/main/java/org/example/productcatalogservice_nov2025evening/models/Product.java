@@ -15,7 +15,7 @@ public class Product extends BaseModel {
     private String description;
     private String imageUrl;
     private Double price;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     private Category category;
 
     //Business specific fields

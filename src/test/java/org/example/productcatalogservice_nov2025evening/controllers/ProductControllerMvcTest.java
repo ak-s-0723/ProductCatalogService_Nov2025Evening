@@ -63,6 +63,7 @@ public class ProductControllerMvcTest {
         productDtoList.add(productDto1);
         productDtoList.add(productDto2);
 
+
         String expectedResponse = objectMapper.writeValueAsString(productDtoList);
 
         //Act and Assert

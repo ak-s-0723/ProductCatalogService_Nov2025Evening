@@ -50,16 +50,16 @@ public class StorageProductService implements IProductService {
 
     @Override
     public void deleteProduct(Long id) {
-        Optional<Product> optionalProduct = productRepo.findById(id);
-        if(optionalProduct.isPresent()) {
-            Product product = optionalProduct.get();
-            if(product.getState().equals(State.ACTIVE)) {
-                product.setState(State.DELETED);
-                productRepo.save(product);
-            } else {
+//        Optional<Product> optionalProduct = productRepo.findById(id);
+//        if(optionalProduct.isPresent()) {
+//            Product product = optionalProduct.get();
+//            if(product.getState().equals(State.ACTIVE)) {
+//                product.setState(State.DELETED);
+//                productRepo.save(product);
+//            } else {
                 productRepo.deleteById(id);
-            }
-        }
+//            }
+//        }
     }
 
 
