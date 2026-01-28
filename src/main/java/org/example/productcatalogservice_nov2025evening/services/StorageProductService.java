@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service("sps")
-@Primary
+//@Primary
 public class StorageProductService implements IProductService {
 
     @Autowired

@@ -4,6 +4,9 @@ import org.example.productcatalogservice_nov2025evening.dtos.FakeStoreProductDto
 import org.example.productcatalogservice_nov2025evening.models.Category;
 import org.example.productcatalogservice_nov2025evening.models.Product;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.context.annotation.Primary;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -17,10 +20,18 @@ import org.springframework.web.client.RestTemplate;
 import java.util.List;
 
 @Service("fkps")
+@Primary
 public class FakeStoreProductService implements IProductService {
 
+//    @Autowired
+//    private RestTemplate restTemplate;
+
     @Autowired
-    private RestTemplate restTemplate;
+    private RestTemplateBuilder restTemplateBuilder;
+
+
+    @Autowired
+    private RedisTemplate<String,Object> redisTemplate;
 
     @Override
     public Product getProductById(Long id) {
@@ -28,16 +39,34 @@ public class FakeStoreProductService implements IProductService {
 //                restTemplate.getForEntity("https://fakestoreapi.com/products/{id}",
 //                        FakeStoreProductDto.class, id);
 
-        ResponseEntity<FakeStoreProductDto> fakeStoreProductDtoResponseEntity =
-                requestForEntity("https://fakestoreapi.com/products/{id}", null, HttpMethod.GET,
-                        FakeStoreProductDto.class, id);
+        FakeStoreProductDto fakeStoreProductDto = null;
 
-        if (fakeStoreProductDtoResponseEntity.getStatusCode().equals(HttpStatusCode.valueOf(200)) &&
-        fakeStoreProductDtoResponseEntity.getBody() != null) {
-            return from(fakeStoreProductDtoResponseEntity.getBody());
-        }
+//        if(found_in_redis(fakestoreProductDto)) {
+//            return it;
+//        }else {
+//            make call to fakestore
+//            store in redis
+//            return
+//        }
 
-        return null;
+       fakeStoreProductDto = (FakeStoreProductDto) redisTemplate.opsForHash().get("PRODUCTS",id);
+
+       if(fakeStoreProductDto == null) {
+         fakeStoreProductDto =
+                   requestForEntity("https://fakestoreapi.com/products/{id}", null, HttpMethod.GET,
+                           FakeStoreProductDto.class, id).getBody();
+
+           if (fakeStoreProductDto != null) {
+               System.out.println("Found by calling fakestore");
+               redisTemplate.opsForHash().put("PRODUCTS", id, fakeStoreProductDto);
+               return from(fakeStoreProductDto);
+           }
+       } else {
+           System.out.println("Found in cache");
+           return from(fakeStoreProductDto);
+       }
+
+       return null;
     }
 
     @Override
@@ -62,9 +91,10 @@ public class FakeStoreProductService implements IProductService {
 
     private <T> ResponseEntity<T> requestForEntity(String url, @Nullable Object request, HttpMethod httpMethod,
                                                    Class<T> responseType, Object... uriVariables) throws RestClientException {
-        RequestCallback requestCallback = restTemplate.httpEntityCallback(request, responseType);
-        ResponseExtractor<ResponseEntity<T>> responseExtractor = restTemplate.responseEntityExtractor(responseType);
-        return restTemplate.execute(url, httpMethod, requestCallback, responseExtractor, uriVariables);
+        RestTemplate restTemplate1 = restTemplateBuilder.build();
+        RequestCallback requestCallback = restTemplate1.httpEntityCallback(request, responseType);
+        ResponseExtractor<ResponseEntity<T>> responseExtractor = restTemplate1.responseEntityExtractor(responseType);
+        return restTemplate1.execute(url, httpMethod, requestCallback, responseExtractor, uriVariables);
     }
 
     @Override
